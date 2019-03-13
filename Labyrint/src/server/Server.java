@@ -1,34 +1,40 @@
 package server;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
-public class Server extends Thread {
-	// HashSet cannot contain duplicate values. -Does this work on threads?
-	public static Set<ThreadClient> playerList = new HashSet<>();
-	// static DataOutputStream pipeOut;
-	static BufferedReader inFromClient;
-	static ThreadClient tc;
-	static ThreadClientListener listener;
-	static ServerSocket serverSocket;
+public class Server {
 
-	public static void main(String[] args) throws Exception, IOException {
-		serverSocket = new ServerSocket(6000);
+	static ServerSocket clientSocket;
+	static ServerSocket receiverSocket;
+	static Socket connection;
+	static ServerClientUpdater scu;
+	static List<ServerClientThread> sctList = new ArrayList<>();
+	
 
+	
+	public static void main(String[] args) {
+		System.out.println("(Server) main()");
+
+		scu = new ServerClientUpdater();
+		
+		try {
+			clientSocket = new ServerSocket(5000);
+			
 		while (true) {
-			acceptClient();
+				connection = clientSocket.accept();
+				ServerClientThread sct = new ServerClientThread(connection, scu);
+				sctList.add(sct);
+				System.out.println("(Server) a client has been added to sctList");
+		}
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
+	
+	
 
-	public static void acceptClient() throws Exception {
-		Socket server_client = serverSocket.accept();
-		tc = new ThreadClient(server_client);
-		listener = new ThreadClientListener(server_client);
-		listener.start();
-		tc.start();
-	}
 }
