@@ -1,13 +1,12 @@
 package networkgame;
 
+import javafx.application.Platform;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
-
-import javafx.application.Platform;
 
 public class ServerListenerThread extends Thread {
 
@@ -24,7 +23,7 @@ public class ServerListenerThread extends Thread {
              * direction første gang så kører vi i en while løkke hvor placering og point
              * opdateres løbende
              */
-            welcomeSocket = new ServerSocket(6111);
+            welcomeSocket = new ServerSocket(6333);
             connectionSocket = welcomeSocket.accept();
 
             BufferedReader inFromClientFirsttime = new BufferedReader(
@@ -55,7 +54,7 @@ public class ServerListenerThread extends Thread {
             welcomeSocket.close();
 
             while (true) {
-                welcomeSocket = new ServerSocket(6222);
+                welcomeSocket = new ServerSocket(6444);
                 connectionSocket = welcomeSocket.accept();
 
                 BufferedReader inFromClient = new BufferedReader(
