@@ -13,10 +13,10 @@ public class Player {
 		this.name = name;
 		this.currentX = currentX;
 		this.currentY = currentY;
-		this.direction = direction;
-		this.points = points;
 		this.newX = newX;
 		this.newY = newY;
+		this.direction = direction;
+		this.points = points;
 	}
 
 	public int getCurrentX() {
@@ -41,7 +41,7 @@ public class Player {
 		return newY;
 	}
 	public void setNewY(int newY) {
-		this.newX = newY;
+		this.newY = newY;
 	}
 	public String getDirection() {
 		return direction;

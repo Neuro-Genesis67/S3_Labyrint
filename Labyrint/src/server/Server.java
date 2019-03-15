@@ -25,6 +25,7 @@ public class Server {
 		while (true) {
 				connection = serverSocket.accept();
 				ServerClientThread sct = new ServerClientThread(connection);
+				sct.start();
 				sctList.add(sct);
 				System.out.println("(Server) client added to sctList");
 		}
@@ -33,8 +34,9 @@ public class Server {
 		}
 	}
 	
-	public void updateClients(String playerDetails) throws IOException {
+	public static void updateClients(String playerDetails) throws IOException {
 		for (ServerClientThread sct : sctList) {
+			System.out.println("(Server) updateClients() -> sct.updateGame(playerDetails)");
 			sct.updateGame(playerDetails);
 		}
 	}

@@ -146,20 +146,18 @@ public class Main extends Application {
 
 			scene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
 				switch (event.getCode()) {
-				case UP:  
-					// Get token/Critical section here
-					updateGame(me.getName(), me.getCurrentX(), me.getCurrentY(), me.getNewX(), me.getCurrentY()-1, me.getDirection(), me.getPoints()); 
+				case UP:  // Get token/Critical section here
+					updateGame(me.getName(), me.getCurrentX(), me.getCurrentY(), me.getCurrentX(), me.getCurrentY()-1, me.getDirection(), me.getPoints()); break; 
 					
-					
-					break; 
-					
-				case DOWN:  updateGame(me.getName(), me.getCurrentX(), me.getCurrentY(), me.getNewX(), me.getCurrentY()+1, me.getDirection(), me.getPoints()); break;
+				case DOWN:  
+					updateGame(me.getName(), me.getCurrentX(), me.getCurrentY(), me.getCurrentX(), me.getCurrentY()+1, me.getDirection(), me.getPoints()); break;
 			
-				
-				case LEFT:  updateGame(me.getName(), me.getCurrentX(), me.getCurrentY(), me.getCurrentX()-1, me.getNewY(), me.getDirection(), me.getPoints()); break;
-			
-				
-				case RIGHT: updateGame(me.getName(), me.getCurrentX(), me.getCurrentY(), me.getCurrentX()+1, me.getNewY(), me.getDirection(), me.getPoints()); break;
+				case LEFT:  
+					updateGame(me.getName(), me.getCurrentX(), me.getCurrentY(), me.getCurrentX()-1, me.getCurrentY(), me.getDirection(), me.getPoints()); break;
+					
+				case RIGHT: 
+					updateGame(me.getName(), me.getCurrentX(), me.getCurrentY(), me.getCurrentX()+1, me.getCurrentY(), me.getDirection(), me.getPoints()); 
+					break;
 			
 				
 				default: break;
@@ -184,47 +182,15 @@ public class Main extends Application {
 			e.printStackTrace();
 		}
 	}
-
-//	public void playerMoved(int delta_x, int delta_y, String direction) { //recode that shit
-//		me.direction = direction;
-//		int x = me.getXpos(),y = me.getYpos();
-//
-//		if (board[y+delta_y].charAt(x+delta_x)=='w') {
-//			me.addPoints(-1);
-//		} 
-//		else {
-//			Player p = getPlayerAt(x+delta_x,y+delta_y);
-//			if (p != null) {
-//              me.addPoints(10);
-//              p.addPoints(-10);
-//			} else {
-//				me.addPoints(1);
-//			
-//				fields[x][y].setGraphic(new ImageView(image_floor));
-//				x+=delta_x;
-//				y+=delta_y;
-//
-//				if (direction.equals("right")) {
-//					fields[x][y].setGraphic(new ImageView(hero_right));
-//				};
-//				if (direction.equals("left")) {
-//					fields[x][y].setGraphic(new ImageView(hero_left));
-//				};
-//				if (direction.equals("up")) {
-//					fields[x][y].setGraphic(new ImageView(hero_up));
-//				};
-//				if (direction.equals("down")) {
-//					fields[x][y].setGraphic(new ImageView(hero_down));
-//				};
-//
-//				me.setXpos(x);
-//				me.setYpos(y);
-//			}
-//		}
-//		scoreList.setText(getScoreList());
-//	}
 	
-	public void updateGame(String name, int currentX, int currentY, int newX, int newY, String direction, int points)  {
+	public void updateGame(String name, int currentX, int currentY, int newX, int newY, String direction, int points) {
+		
+//		System.out.println("Start of updategame");
+//		System.out.println(name);
+//		System.out.println(currentX);
+//		System.out.println(currentY);
+//		System.out.println(newX);
+//		System.out.println(newY);
 		
 		Player player = null;
 		
@@ -233,26 +199,25 @@ public class Main extends Application {
 			
 			// Is the player myself?
 			if (p.getName().equals(me.getName())) {
-					player = me;
-					System.out.println("(Main) updateGame() -> " + p.getName() + " My own player has been selected");
-				
+				player = me;
+				System.out.println("(Main) updateGame() -> " + p.getName() + " My own player has been selected");
 				break;
-			}
-			
-			// Is the player someone else in the list?
-			if (p.getName().equals(name) && player != me) {
+				
+		// Is the player someone else in the list?
+			} else if (p.getName().equals(name)) {
 				player = p;
 				System.out.println("(Main) updateGame() -> " + p.getName() + " Someone elses player has been selected");
 				break;
 			}
 		}
 		
+		// If player is not in playerlist
 		if (player == null) {
 			System.out.println("(Main) updateGame() -> " + "Player not found - Adding new player to game");
 			player = new Player(name, currentX, currentY, newX, newY, direction, points);
 			players.add(player);
 			if (direction.equals("up")) {
-				fields[player.getCurrentX()][player.getCurrentY()].setGraphic(new ImageView(hero_up));
+				fields[player.getCurrentX()][player.getCurrentY()].setGraphic(new ImageView(hero_up)); //skal måske være getNewX og newY
 			};
 			if (direction.equals("down")) {
 				fields[player.getCurrentX()][player.getCurrentY()].setGraphic(new ImageView(hero_down));
@@ -309,12 +274,25 @@ public class Main extends Application {
 				//Set players new position
 				player.setCurrentX(newX);
 				player.setCurrentY(newY);
-				player.setNewX(newX);
-				player.setNewY(newY);
-				
-				System.out.println("details = " + player.getPlayer());
-				
+				player.setNewX(player.getCurrentX());
+				player.setNewY(player.getCurrentY());
 				scoreList.setText(getScoreList());
+				
+//				System.out.println("End of updategame");
+//				System.out.println(player.name);
+//				System.out.println(player.currentX);
+//				System.out.println(player.currentY);
+//				System.out.println(player.newX);
+//				System.out.println(player.newY);
+				
+				if (player == me) {
+				try {
+					sendMove();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				}
+				
 			}
 		}
 	}

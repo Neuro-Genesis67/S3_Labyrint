@@ -7,8 +7,6 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-import javafx.application.Platform;
-
 public class ClientReceiverThread extends Thread {
 	
 	Main main;
@@ -30,7 +28,7 @@ public class ClientReceiverThread extends Thread {
 	public ClientReceiverThread() throws InterruptedException {
 		
 		try {
-			client_Server = new Socket("192.168.0.102", 5000);
+			client_Server = new Socket("192.168.0.100", 5000);
 			pipeIn = new BufferedReader(new InputStreamReader(client_Server.getInputStream()));
 			pipeOut = new DataOutputStream(client_Server.getOutputStream());
 		} catch (UnknownHostException e) {
@@ -55,7 +53,7 @@ public class ClientReceiverThread extends Thread {
 			try {
 				// receives messages from its SCT and implement into the game
 				message = pipeIn.readLine();
-				System.out.println("(CRT got " + message);
+				System.out.println("(ClientReceiverThread) received: " + message);
 				parts = message.split("-"); //Skal den initialiseres først?
 				
 				//Process the string
@@ -64,18 +62,24 @@ public class ClientReceiverThread extends Thread {
 				currentY = Integer.parseInt(parts[2]);
 				newX = Integer.parseInt(parts[3]);
 				newY = Integer.parseInt(parts[4]);
-				points = Integer.parseInt(parts[5]);
-				direction = parts[6];
+				direction = parts[5];
+				points = Integer.parseInt(parts[6]);
 				
-				Platform.runLater(() -> main.updateGame(name, currentX, currentY, newX, newY, direction, points)); 
+				System.out.println("before runlater");
+				 
+		            	
+		                      
 				
+				main.updateGame(name, currentX, currentY, newX, newY, direction, points); 
+				        	  
+		               
+
+				
+				System.out.println("after runlater");
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
-		
-		
-		
 	}
 	
 
@@ -86,7 +90,10 @@ public class ClientReceiverThread extends Thread {
 	public void sendToServer(String playerDetails) throws IOException {
 		System.out.println("(ClientReceiverThread) sendToServer() -> " + playerDetails);
 		pipeOut.writeBytes(playerDetails + "\n");
-		
+	}
+	
+	public void updateMain(String name, int currentX, int currentY, int newX, int newY, String direction, int points) {
+		main.updateGame(name, currentX, currentY, newX, newY, direction, points);
 	}
 	
 	

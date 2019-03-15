@@ -12,7 +12,6 @@ public class ServerClientThread extends Thread {
 	Socket server_Client;
 	BufferedReader pipeIn;
 	DataOutputStream pipeOut;
-	Server server;
 	
 	public ServerClientThread(Socket connection) throws IOException {
 		this.server_Client = connection;
@@ -29,7 +28,8 @@ public class ServerClientThread extends Thread {
 		while(true) {
 			try {
 				message = pipeIn.readLine();
-				server.updateClients(message);
+				System.out.println("(ServerClientThread) received: " + message);
+				Server.updateClients(message);
 				System.out.println("(ServerClientThread) scu.updateClients(message)");
 				
 			} catch (IOException e) {
