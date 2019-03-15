@@ -11,24 +11,23 @@ import javafx.application.Platform;
 
 public class ClientReceiverThread extends Thread {
 	
-	int token;
 	Main main;
-	
 	String message = "";
+	
 	String name;
-	int x;
-	int y;
-	String direction;
+	int currentX;
+	int currentY;
+	int newX;
+	int newY;
 	int points;
+	String direction;
 	
 	Socket client_Server;
 	BufferedReader pipeIn;
 	DataOutputStream pipeOut;
 	String[] parts;
 	
-	
 	public ClientReceiverThread() throws InterruptedException {
-		token = 0;
 		
 		try {
 			client_Server = new Socket("192.168.0.100", 5000);
@@ -39,14 +38,11 @@ public class ClientReceiverThread extends Thread {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
 	}
-	
 	
 	@Override
 	public void run() {
 	System.out.println("(ClientReceiverThread) run()");
-		
 		
 	try {
 		// Send player details when connecting to server
@@ -63,14 +59,14 @@ public class ClientReceiverThread extends Thread {
 				
 				//Process the string
 				name = parts[0];
-				x = Integer.parseInt(parts[1]);
-				y = Integer.parseInt(parts[2]);
-				direction = parts[3];
-				points = Integer.parseInt(parts[4]);
+				currentX = Integer.parseInt(parts[1]);
+				currentY = Integer.parseInt(parts[2]);
+				newX = Integer.parseInt(parts[3]);
+				newY = Integer.parseInt(parts[4]);
+				points = Integer.parseInt(parts[5]);
+				direction = parts[6];
 				
-				Platform.runLater(() -> main.playerMoved(x, y, direction)); //Alter playermoved first
-				
-				//main.playerMoved(delta_x, delta_y, direction); Probably need to alter the method to fit new Player variables
+				Platform.runLater(() -> main.updateGame(name, currentX, currentY, newX, newY, direction, points)); 
 				
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -81,18 +77,13 @@ public class ClientReceiverThread extends Thread {
 		
 	}
 	
-	private void getToken() {
-		this.token = 1;
-	}
-	
-	private void releaseToken() {
-		this.token = 0;
-	}
+
 	
 	
 
 
 	public void sendToServer(String playerDetails) throws IOException {
+		System.out.println("(ClientReceiverThread) sendToServer() -> " + playerDetails);
 		pipeOut.writeBytes(playerDetails + "\n");
 		
 	}

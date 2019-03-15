@@ -146,23 +146,23 @@ public class Main extends Application {
 
 			scene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
 				switch (event.getCode()) {
-				case UP:    playerMoved(0,-1,"up");    break;
-				case DOWN:  playerMoved(0,+1,"down");  break;
-				case LEFT:  playerMoved(-1,0,"left");  break;
-				case RIGHT: playerMoved(+1,0,"right"); break;
+				case UP:    updateGame(me.getName(), me.getCurrentX(), me.getCurrentY(), me.getCurrentX(), me.getCurrentY()-1, me.getDirection(), me.getPoints()); break; //needs to change to new message format
+				case DOWN:  updateGame(me.getName(), me.getCurrentX(), me.getCurrentY(), me.getCurrentX(), me.getCurrentY()+1, me.getDirection(), me.getPoints()); break;
+				case LEFT:  updateGame(me.getName(), me.getCurrentX(), me.getCurrentY(), me.getCurrentX()-1, me.getCurrentY(), me.getDirection(), me.getPoints()); break;
+				case RIGHT: updateGame(me.getName(), me.getCurrentX(), me.getCurrentY(), me.getCurrentX()+1, me.getCurrentY(), me.getDirection(), me.getPoints()); break;
 				default: break;
 				}
 			});
 			
             // Setting up standard players
 			
-			me = new Player("Tom",2,2,"up");
+			me = new Player("Tom", 5, 13, 0, 0, "up", 0); // name, int currentX, int currentY, int newX, int newY, String direction, int points
 			players.add(me);
-			fields[1][18].setGraphic(new ImageView(hero_up));
+			fields[5][13].setGraphic(new ImageView(hero_up));
 
-			Player harry = new Player("Bot",3,3,"up");
+			Player harry = new Player("Bot", 5, 15, 0, 0, "up", 0);
 			players.add(harry);
-			fields[14][15].setGraphic(new ImageView(hero_up));
+			fields[5][15].setGraphic(new ImageView(hero_up));
 
 			scoreList.setText(getScoreList());
 			
@@ -173,68 +173,136 @@ public class Main extends Application {
 		}
 	}
 
-	public void playerMoved(int delta_x, int delta_y, String direction) { //recode that shit
-		me.direction = direction;
-		int x = me.getXpos(),y = me.getYpos();
-
-		if (board[y+delta_y].charAt(x+delta_x)=='w') {
-			me.addPoints(-1);
-		} 
-		else {
-			Player p = getPlayerAt(x+delta_x,y+delta_y);
-			if (p != null) {
-              me.addPoints(10);
-              p.addPoints(-10);
-			} else {
-				me.addPoints(1);
+//	public void playerMoved(int delta_x, int delta_y, String direction) { //recode that shit
+//		me.direction = direction;
+//		int x = me.getXpos(),y = me.getYpos();
+//
+//		if (board[y+delta_y].charAt(x+delta_x)=='w') {
+//			me.addPoints(-1);
+//		} 
+//		else {
+//			Player p = getPlayerAt(x+delta_x,y+delta_y);
+//			if (p != null) {
+//              me.addPoints(10);
+//              p.addPoints(-10);
+//			} else {
+//				me.addPoints(1);
+//			
+//				fields[x][y].setGraphic(new ImageView(image_floor));
+//				x+=delta_x;
+//				y+=delta_y;
+//
+//				if (direction.equals("right")) {
+//					fields[x][y].setGraphic(new ImageView(hero_right));
+//				};
+//				if (direction.equals("left")) {
+//					fields[x][y].setGraphic(new ImageView(hero_left));
+//				};
+//				if (direction.equals("up")) {
+//					fields[x][y].setGraphic(new ImageView(hero_up));
+//				};
+//				if (direction.equals("down")) {
+//					fields[x][y].setGraphic(new ImageView(hero_down));
+//				};
+//
+//				me.setXpos(x);
+//				me.setYpos(y);
+//			}
+//		}
+//		scoreList.setText(getScoreList());
+//	}
+	
+	public void updateGame(String name, int currentX, int currentY, int newX, int newY, String direction, int points)  {
+		
+		Player player = null;
+		
+		// ---------------------------------------Er spilleren i players listen?
+		for (Player p : players) {
 			
-				fields[x][y].setGraphic(new ImageView(image_floor));
-				x+=delta_x;
-				y+=delta_y;
-
-				if (direction.equals("right")) {
-					fields[x][y].setGraphic(new ImageView(hero_right));
-				};
-				if (direction.equals("left")) {
-					fields[x][y].setGraphic(new ImageView(hero_left));
-				};
-				if (direction.equals("up")) {
-					fields[x][y].setGraphic(new ImageView(hero_up));
-				};
-				if (direction.equals("down")) {
-					fields[x][y].setGraphic(new ImageView(hero_down));
-				};
-
-				me.setXpos(x);
-				me.setYpos(y);
+			// Is the player myself?
+			if (p.getName().equals(me.getName())) {
+					sendMove();
+					player = me;
+					System.out.println("(Main) updateGame() -> " + p.getName() + " My own player has been selected");
+				
+				break;
+			}
+			
+			// Is the player someone else in the list?
+			if (p.getName().equals(name) && player != me) {
+				player = p;
+				System.out.println("(Main) updateGame() -> " + p.getName() + " Someone elses player has been selected");
+				break;
 			}
 		}
-		scoreList.setText(getScoreList());
+		
+		if (player == null) {
+			System.out.println("(Main) updateGame() -> " + "Player not found - Adding new player to game");
+			player = new Player(name, currentX, currentY, newX, newY, direction, points);
+			players.add(player);
+			if (direction.equals("up")) {
+				fields[player.getCurrentX()][player.getCurrentY()].setGraphic(new ImageView(hero_up));
+			};
+			if (direction.equals("down")) {
+				fields[player.getCurrentX()][player.getCurrentY()].setGraphic(new ImageView(hero_down));
+			};
+			if (direction.equals("left")) {
+				fields[player.getCurrentX()][player.getCurrentY()].setGraphic(new ImageView(hero_left));
+			};
+			if (direction.equals("right")) {
+				fields[player.getCurrentX()][player.getCurrentY()].setGraphic(new ImageView(hero_right));
+			};
+			
+			scoreList.setText(getScoreList());
+		} else {
+			
+		
+		// ----------------------------------------------------------------------
+		
+		
+		// Is x+y a wall?
+		if (board[newY].charAt(newX)=='w') { //prøv med ""
+			System.out.println("(main) " + player.getName() + " hit a wall");
+			player.addPoints(-1);
+			scoreList.setText(getScoreList());
+		} else {
+			
+		// Is x+y a player?
+			Player otherPlayer = getPlayerAt(newX, newY);
+			if (otherPlayer != null) {
+				System.out.println("(main) " + player.getName() + " walks into another player");
+				player.addPoints(10);
+				otherPlayer.addPoints(-10);
+				scoreList.setText(getScoreList());
+				
+			} else {
+		
+		// move to new location and get 1 point
+				System.out.println("(main) " + player.getName() + " walks one step");
+				player.addPoints(1);
+				fields[currentX][currentY].setGraphic(new ImageView(image_floor));
+				
+				if (direction.equals("up")) {
+					fields[newX][newY].setGraphic(new ImageView(hero_up));
+				};
+				if (direction.equals("down")) {
+					fields[newX][newY].setGraphic(new ImageView(hero_down));
+				};
+				if (direction.equals("left")) {
+					fields[newX][newY].setGraphic(new ImageView(hero_left));
+				};
+				if (direction.equals("right")) {
+					fields[newX][newY].setGraphic(new ImageView(hero_right));
+				};
+				
+				//Set players new position
+				player.setCurrentX(newX);
+				player.setCurrentY(newY);
+				
+				scoreList.setText(getScoreList());
+			}
+		}
 	}
-	
-	public void updateGame(String name, int x, int y, String direction, int points) {
-		
-		// Er spilleren i players listen?
-		
-		// Nej: 
-		// -Lav ny spiller 
-		// -add spiller til players list
-		
-		// Ja: 
-		// -
-		// -
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
 	}
 
 	public String getScoreList() {
@@ -247,7 +315,7 @@ public class Main extends Application {
 
 	public Player getPlayerAt(int x, int y) {
 		for (Player p : players) {
-			if (p.getXpos()==x && p.getYpos()==y) {
+			if (p.getCurrentX()==x && p.getCurrentY()==y) {
 				return p;
 			}
 		}
@@ -259,8 +327,13 @@ public class Main extends Application {
 		receiverThread.start();
 	}
 	
-	private void move() throws IOException {
-		receiverThread.sendToServer(me.getPlayer());
+	private void sendMove() {
+		try {
+			receiverThread.sendToServer(me.getPlayer() + "\n");
+		} catch (IOException e) {
+			System.out.println("(sendMove) Error: Not connected to server");
+			e.printStackTrace();
+		}
 	}
 	
 	public static void main(String[] args) {

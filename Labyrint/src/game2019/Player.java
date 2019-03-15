@@ -2,30 +2,34 @@ package game2019;
 
 public class Player {
 	String name;
-	int xpos;
-	int ypos;
+	int currentX;
+	int currentY;
+	int newX;
+	int newY;
 	int points;
 	String direction;
 
-	public Player(String name, int xpos, int ypos, String direction) {
+	public Player(String name, int currentX, int currentY, int newX, int newY, String direction, int points) {
 		this.name = name;
-		this.xpos = xpos;
-		this.ypos = ypos;
+		this.currentX = currentX;
+		this.currentY = currentY;
 		this.direction = direction;
-		this.points = 0;
+		this.points = points;
+		this.newX = newX;
+		this.newY = newY;
 	}
 
-	public int getXpos() {
-		return xpos;
+	public int getCurrentX() {
+		return currentX;
 	}
-	public void setXpos(int xpos) {
-		this.xpos = xpos;
+	public void setCurrentX(int xpos) {
+		this.currentX = xpos;
 	}
-	public int getYpos() {
-		return ypos;
+	public int getCurrentY() {
+		return currentY;
 	}
-	public void setYpos(int ypos) {
-		this.ypos = ypos;
+	public void setCurrentY(int ypos) {
+		this.currentY = ypos;
 	}
 	public String getDirection() {
 		return direction;
@@ -50,8 +54,10 @@ public class Player {
 	}
 	public String getPlayer() {
 		return  name + "-" + 
-				xpos + "-" + 
-				ypos + "-" + 
+				currentX + "-" + 
+				currentY + "-" + 
+				newX + "-" + 
+				newY + "-" + 
 				direction + "-" + 
 				points;
 	}
