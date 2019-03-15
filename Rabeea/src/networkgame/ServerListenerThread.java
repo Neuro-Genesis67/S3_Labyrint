@@ -1,12 +1,13 @@
 package networkgame;
 
-import javafx.application.Platform;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+
+import javafx.application.Platform;
 
 public class ServerListenerThread extends Thread {
 
@@ -23,7 +24,7 @@ public class ServerListenerThread extends Thread {
              * direction første gang så kører vi i en while løkke hvor placering og point
              * opdateres løbende
              */
-            welcomeSocket = new ServerSocket(6333);
+            welcomeSocket = new ServerSocket(6111);
             connectionSocket = welcomeSocket.accept();
 
             BufferedReader inFromClientFirsttime = new BufferedReader(
@@ -54,48 +55,62 @@ public class ServerListenerThread extends Thread {
             welcomeSocket.close();
 
             while (true) {
-                welcomeSocket = new ServerSocket(6444);
+                welcomeSocket = new ServerSocket(6222);
                 connectionSocket = welcomeSocket.accept();
 
                 BufferedReader inFromClient = new BufferedReader(
                         new InputStreamReader(connectionSocket.getInputStream()));
-                String clientInput = inFromClient.readLine();
 
-                if (clientInput != null) {
-                    messagesReceived.add(clientInput);
+                // der modtages altid 2 beskeder fra en spiller, en besked om point og en besked
+                // om positionen
+                String clientInputPoint = inFromClient.readLine();
+                String clientInputMoved = inFromClient.readLine();
+
+                if (clientInputPoint != null) {
+                    messagesReceived.add(clientInputPoint);
+                }
+
+                if (clientInputMoved != null) {
+                    messagesReceived.add(clientInputMoved);
                 }
 
                 if (!messagesReceived.isEmpty()) {
-                    if (messagesReceived.get(0) != null && messagesReceived.get(0).contains("pointchanged")) {
 
-                        String message = messagesReceived.remove(0);
-                        String[] messageParts = message.split(" ");
+                    for (int i = 0; i < messagesReceived.size(); i++) {
 
-                        String name = messageParts[1]; // name
-                        String point = messageParts[2]; // point
+                        if (messagesReceived.get(0).contains("pointchanged")) {
 
-                        if (name.equals(Main.me.getName())) {
-                            Main.me.setPoint(Integer.parseInt(point));
+                            String message = messagesReceived.remove(0);
+                            String[] messageParts = message.split(" ");
 
-                        } else if (name.equals(Main.otherPlayer.getName())) {
-                            Main.otherPlayer.setPoint(Integer.parseInt(point));
+                            System.out.println(message);
+
+                            String name = messageParts[1]; // name
+                            String point = messageParts[2]; // point
+
+                            if (name.equals(Main.otherPlayer.getName())) {
+                                Main.otherPlayer.setPoint(Integer.parseInt(point));
+                            }
+
+                        } else if (messagesReceived.get(0).contains("playermoved")) {
+
+                            String message = messagesReceived.remove(0);
+                            String[] messageParts = message.split(" ");
+
+                            System.out.println(message);
+
+                            String xPos = messageParts[1]; // Xpos
+                            String yPos = messageParts[2]; // Ypos
+                            String direction = messageParts[3]; // direction
+
+                            Platform.runLater(() -> Main.playerMoved(Main.otherPlayer,
+                                    // det nye position minus det gamle position - dvs. hvis man fx bevæger sig
+                                    // mod venstre er x: -1 og y: 0
+                                    // billedet opdateres i playerMoved metoden i Main afhængig af direction
+                                    Integer.parseInt(xPos) - Main.otherPlayer.getXpos(),
+                                    Integer.parseInt(yPos) - Main.otherPlayer.getYpos(), direction));
                         }
-
-                    } else if (messagesReceived.get(0) != null && messagesReceived.get(0).contains("playermoved")) {
-
-                        String message = messagesReceived.remove(0);
-                        String[] messageParts = message.split(" ");
-
-                        String xPos = messageParts[1]; // Xpos
-                        String yPos = messageParts[2]; // Ypos
-                        String direction = messageParts[3]; // direction
-
-                        Platform.runLater(() -> Main.playerMoved(Main.otherPlayer,
-                                // det nye position minus det gamle position - dvs. hvis man fx bevæger sig
-                                // mod venstre er x: -1 og y: 0
-                                // billedet opdateres i playerMoved metoden i Main afhængig af direction
-                                Integer.parseInt(xPos) - Main.otherPlayer.getXpos(),
-                                Integer.parseInt(yPos) - Main.otherPlayer.getYpos(), direction));
+                        Main.scoreList.setText(Main.getScoreList()); // scorelist opdateres
                     }
                 }
                 inFromClient.close();

@@ -182,7 +182,7 @@ public class Main extends Application {
 		} 
 		else {
 			Player p = getPlayerAt(x+delta_x,y+delta_y);
-			if (p!=null) {
+			if (p != null) {
               me.addPoints(10);
               p.addPoints(-10);
 			} else {
@@ -211,6 +211,31 @@ public class Main extends Application {
 		}
 		scoreList.setText(getScoreList());
 	}
+	
+	public void updateGame(String name, int x, int y, String direction, int points) {
+		
+		// Er spilleren i players listen?
+		
+		// Nej: 
+		// -Lav ny spiller 
+		// -add spiller til players list
+		
+		// Ja: 
+		// -
+		// -
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	}
 
 	public String getScoreList() {
 		StringBuffer b = new StringBuffer(100);
@@ -230,13 +255,12 @@ public class Main extends Application {
 	}
 
 	private void connectToServer() throws UnknownHostException, IOException, InterruptedException {
-//		client_Server = new Socket("192.168.0.100", 5000);
 		receiverThread = new ClientReceiverThread();
 		receiverThread.start();
 	}
 	
 	private void move() throws IOException {
-		receiverThread.sendToSCT();
+		receiverThread.sendToServer(me.getPlayer());
 	}
 	
 	public static void main(String[] args) {

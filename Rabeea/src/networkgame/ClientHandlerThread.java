@@ -24,7 +24,7 @@ public class ClientHandlerThread extends Thread {
              * første gang så kører vi i en while løkke hvor placering og point opdateres
              * løbende
              */
-            clientSocket = new Socket(clientIP, 6111);
+            clientSocket = new Socket(clientIP, 6333);
 
             DataOutputStream outputFirstTime = new DataOutputStream(clientSocket.getOutputStream());
 
@@ -37,25 +37,20 @@ public class ClientHandlerThread extends Thread {
             clientSocket.close();
 
             while (true) {
-                try {
-                    clientSocket = new Socket(clientIP, 6222);
-                    DataOutputStream outputRegularly = new DataOutputStream(clientSocket.getOutputStream());
 
-                    if (!messagesSent.isEmpty()) {
-                        String outputMessage = messagesSent.remove(0);
+                clientSocket = new Socket(clientIP, 6444);
+                DataOutputStream outputRegularly = new DataOutputStream(clientSocket.getOutputStream());
 
-                        outputRegularly.writeBytes(outputMessage + "\n");
-                    }
+                while (!messagesSent.isEmpty()) {
 
+                    String outputMessage = messagesSent.remove(0);
+
+                    outputRegularly.writeBytes(outputMessage + "\n");
                     outputRegularly.flush();
-
-                    outputRegularly.close();
-                    clientSocket.close();
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    break;
                 }
+
+                outputRegularly.close();
+                clientSocket.close();
             }
 
         } catch (IOException e) {

@@ -49,7 +49,11 @@ public class Player {
 		this.name = name;
 	}
 	public String getPlayer() {
-		return name + "-" + xpos + "-" + ypos + "-" + direction + "-" + points;
+		return  name + "-" + 
+				xpos + "-" + 
+				ypos + "-" + 
+				direction + "-" + 
+				points;
 	}
 	@Override
 	public String toString() {

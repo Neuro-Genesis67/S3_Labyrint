@@ -8,25 +8,23 @@ import java.util.List;
 
 public class Server {
 
-	static ServerSocket clientSocket;
+	static ServerSocket serverSocket;
 	static ServerSocket receiverSocket;
 	static Socket connection;
-	static ServerClientUpdater scu;
+	
 	static List<ServerClientThread> sctList = new ArrayList<>();
 	
 
 	
 	public static void main(String[] args) {
 		System.out.println("(Server) main()");
-
-		scu = new ServerClientUpdater();
 		
 		try {
-			clientSocket = new ServerSocket(5000);
+			serverSocket = new ServerSocket(5000);
 			
 		while (true) {
-				connection = clientSocket.accept();
-				ServerClientThread sct = new ServerClientThread(connection, scu);
+				connection = serverSocket.accept();
+				ServerClientThread sct = new ServerClientThread(connection);
 				sctList.add(sct);
 				System.out.println("(Server) a client has been added to sctList");
 		}
@@ -34,6 +32,14 @@ public class Server {
 			e.printStackTrace();
 		}
 	}
+	
+	public void updateClients(String playerDetails) throws IOException {
+		for (ServerClientThread sct : sctList) {
+			sct.updateGame(playerDetails);
+		}
+	}
+	
+	
 	
 	
 

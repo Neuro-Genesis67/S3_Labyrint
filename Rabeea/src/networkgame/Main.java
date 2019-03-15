@@ -22,15 +22,20 @@ package networkgame;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javafx.application.Application;
 import javafx.geometry.Insets;
-import javafx.stage.Stage;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.scene.image.*;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
-import javafx.scene.text.*;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
+import javafx.stage.Stage;
 
 public class Main extends Application {
 
@@ -48,7 +53,7 @@ public class Main extends Application {
     public static Player me;
     public static Player otherPlayer;
     public static List<Player> players = new ArrayList<>();
-    public static String otherPlayerIP = "192.168.0.23";
+    public static String otherPlayerIP = "10.24.3.71";
 
     private static Label[][] fields;
     public static TextArea scoreList;
@@ -144,11 +149,11 @@ public class Main extends Application {
             });
 
             // Setting up standard players
-            me = new Player("Rabeea", 9, 4, "up");
+            me = new Player("Tom", 14, 15, "up");
             players.add(me);
             fields[me.getXpos()][me.getYpos()].setGraphic(new ImageView(hero_up));
 
-            otherPlayer = new Player("NO PLAYER", 14, 15, "up");
+            otherPlayer = new Player("NO PLAYER", 9, 4, "up");
             players.add(otherPlayer);
             fields[otherPlayer.getXpos()][otherPlayer.getYpos()].setGraphic(new ImageView(hero_up));
 
@@ -165,12 +170,17 @@ public class Main extends Application {
         }
     }
 
-    public static void playerMoved(Player player, int delta_x, int delta_y, String direction) {
+    // den anden spilleres point opdateres ikke i denne metode men opdateres ud fra
+    // den besked der modtages når den anden spilleres point ændrer sig
+    public static synchronized void playerMoved(Player player, int delta_x, int delta_y, String direction) {
         player.direction = direction;
         int x = player.getXpos(), y = player.getYpos();
 
         if (board[y + delta_y].charAt(x + delta_x) == 'w') {
-            player.addPoints(-1);
+
+            if (!player.equals(otherPlayer)) {
+                player.addPoints(-1);
+            }
 
             // ændring af point sendes afsted til den anden spiller
             if (player.equals(me)) {
@@ -179,8 +189,11 @@ public class Main extends Application {
         } else {
             Player p = getPlayerAt(x + delta_x, y + delta_y);
             if (p != null) {
-                player.addPoints(10);
-                p.addPoints(-10);
+
+                if (!player.equals(otherPlayer)) {
+                    player.addPoints(10);
+                    p.addPoints(-10);
+                }
 
                 // ændring af point sendes afsted til den anden spiller
                 if (player.equals(me)) {
@@ -188,7 +201,9 @@ public class Main extends Application {
                     clientHandlerThread.messagesSent.add("pointchanged " + p.name + " " + p.getPoint());
                 }
             } else {
-                player.addPoints(1);
+                if (!player.equals(otherPlayer)) {
+                    player.addPoints(1);
+                }
 
                 // ændring af point sendes afsted til den anden spiller
                 if (player.equals(me)) {
