@@ -26,7 +26,7 @@ public class Server {
 				connection = serverSocket.accept();
 				ServerClientThread sct = new ServerClientThread(connection);
 				sctList.add(sct);
-				System.out.println("(Server) a client has been added to sctList");
+				System.out.println("(Server) client added to sctList");
 		}
 		} catch (IOException e) {
 			e.printStackTrace();

@@ -25,7 +25,7 @@ public class Main extends Application {
 	
 	
 	Socket client_Server;
-	ClientReceiverThread receiverThread;
+	ClientReceiverThread clientReceiverThread;
 
 	public static final int size = 20; 
 	public static final int scene_height = size * 20 + 100;
@@ -146,21 +146,33 @@ public class Main extends Application {
 
 			scene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
 				switch (event.getCode()) {
-				case UP:    updateGame(me.getName(), me.getCurrentX(), me.getCurrentY(), me.getCurrentX(), me.getCurrentY()-1, me.getDirection(), me.getPoints()); break; //needs to change to new message format
-				case DOWN:  updateGame(me.getName(), me.getCurrentX(), me.getCurrentY(), me.getCurrentX(), me.getCurrentY()+1, me.getDirection(), me.getPoints()); break;
-				case LEFT:  updateGame(me.getName(), me.getCurrentX(), me.getCurrentY(), me.getCurrentX()-1, me.getCurrentY(), me.getDirection(), me.getPoints()); break;
-				case RIGHT: updateGame(me.getName(), me.getCurrentX(), me.getCurrentY(), me.getCurrentX()+1, me.getCurrentY(), me.getDirection(), me.getPoints()); break;
+				case UP:  
+					// Get token/Critical section here
+					updateGame(me.getName(), me.getCurrentX(), me.getCurrentY(), me.getNewX(), me.getCurrentY()-1, me.getDirection(), me.getPoints()); 
+					
+					
+					break; 
+					
+				case DOWN:  updateGame(me.getName(), me.getCurrentX(), me.getCurrentY(), me.getNewX(), me.getCurrentY()+1, me.getDirection(), me.getPoints()); break;
+			
+				
+				case LEFT:  updateGame(me.getName(), me.getCurrentX(), me.getCurrentY(), me.getCurrentX()-1, me.getNewY(), me.getDirection(), me.getPoints()); break;
+			
+				
+				case RIGHT: updateGame(me.getName(), me.getCurrentX(), me.getCurrentY(), me.getCurrentX()+1, me.getNewY(), me.getDirection(), me.getPoints()); break;
+			
+				
 				default: break;
 				}
 			});
 			
             // Setting up standard players
 			
-			me = new Player("Tom", 5, 13, 0, 0, "up", 0); // name, int currentX, int currentY, int newX, int newY, String direction, int points
+			me = new Player("Tom", 5, 13, 5, 13, "up", 0); // name, int currentX, int currentY, int newX, int newY, String direction, int points
 			players.add(me);
 			fields[5][13].setGraphic(new ImageView(hero_up));
 
-			Player harry = new Player("Bot", 5, 15, 0, 0, "up", 0);
+			Player harry = new Player("Bot", 5, 15, 5, 15, "up", 0);
 			players.add(harry);
 			fields[5][15].setGraphic(new ImageView(hero_up));
 
@@ -221,7 +233,6 @@ public class Main extends Application {
 			
 			// Is the player myself?
 			if (p.getName().equals(me.getName())) {
-					sendMove();
 					player = me;
 					System.out.println("(Main) updateGame() -> " + p.getName() + " My own player has been selected");
 				
@@ -298,6 +309,10 @@ public class Main extends Application {
 				//Set players new position
 				player.setCurrentX(newX);
 				player.setCurrentY(newY);
+				player.setNewX(newX);
+				player.setNewY(newY);
+				
+				System.out.println("details = " + player.getPlayer());
 				
 				scoreList.setText(getScoreList());
 			}
@@ -323,17 +338,12 @@ public class Main extends Application {
 	}
 
 	private void connectToServer() throws UnknownHostException, IOException, InterruptedException {
-		receiverThread = new ClientReceiverThread();
-		receiverThread.start();
+		clientReceiverThread = new ClientReceiverThread();
+		clientReceiverThread.start();
 	}
 	
-	private void sendMove() {
-		try {
-			receiverThread.sendToServer(me.getPlayer() + "\n");
-		} catch (IOException e) {
-			System.out.println("(sendMove) Error: Not connected to server");
-			e.printStackTrace();
-		}
+	private void sendMove() throws IOException {
+		clientReceiverThread.sendToServer(me.getPlayer() + "\n");
 	}
 	
 	public static void main(String[] args) {

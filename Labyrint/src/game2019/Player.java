@@ -31,6 +31,18 @@ public class Player {
 	public void setCurrentY(int ypos) {
 		this.currentY = ypos;
 	}
+	public int getNewX() {
+		return newX;
+	}
+	public void setNewX(int newX) {
+		this.newX = newX;
+	}
+	public int getNewY() {
+		return newY;
+	}
+	public void setNewY(int newY) {
+		this.newX = newY;
+	}
 	public String getDirection() {
 		return direction;
 	}
