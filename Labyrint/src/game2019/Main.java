@@ -25,7 +25,7 @@ public class Main extends Application {
 	
 	
 	Socket client_Server;
-	ClientReceiverThread clientReceiverThread;
+	static ClientReceiverThread clientReceiverThread;
 
 	public static final int size = 20; 
 	public static final int scene_height = size * 20 + 100;
@@ -38,10 +38,10 @@ public class Main extends Application {
 	public static Player me;
 	public static List<Player> players = new ArrayList<Player>();
 
-	private Label[][] fields;
-	private TextArea scoreList;
+	private static Label[][] fields;
+	private static TextArea scoreList;
 	
-	private  String[] board = {    // 20x20
+	private static  String[] board = {    // 20x20
 			"wwwwwwwwwwwwwwwwwwww",
 			"w        ww        w",
 			"w w  w  www w  w  ww",
@@ -183,7 +183,7 @@ public class Main extends Application {
 		}
 	}
 	
-	public void updateGame(String name, int currentX, int currentY, int newX, int newY, String direction, int points) {
+	public static void updateGame(String name, int currentX, int currentY, int newX, int newY, String direction, int points) {
 		
 //		System.out.println("Start of updategame");
 //		System.out.println(name);
@@ -191,6 +191,8 @@ public class Main extends Application {
 //		System.out.println(currentY);
 //		System.out.println(newX);
 //		System.out.println(newY);
+		
+	
 		
 		Player player = null;
 		
@@ -298,7 +300,7 @@ public class Main extends Application {
 	}
 	}
 
-	public String getScoreList() {
+	public static String getScoreList() {
 		StringBuffer b = new StringBuffer(100);
 		for (Player p : players) {
 			b.append(p+"\r\n");
@@ -306,7 +308,7 @@ public class Main extends Application {
 		return b.toString();
 	}
 
-	public Player getPlayerAt(int x, int y) {
+	public static Player getPlayerAt(int x, int y) {
 		for (Player p : players) {
 			if (p.getCurrentX()==x && p.getCurrentY()==y) {
 				return p;
@@ -320,7 +322,7 @@ public class Main extends Application {
 		clientReceiverThread.start();
 	}
 	
-	private void sendMove() throws IOException {
+	private static void sendMove() throws IOException {
 		clientReceiverThread.sendToServer(me.getPlayer() + "\n");
 	}
 	

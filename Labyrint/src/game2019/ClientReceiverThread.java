@@ -7,9 +7,11 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import javafx.application.Platform;
+
 public class ClientReceiverThread extends Thread {
 	
-	Main main;
+	
 	String message = "";
 	
 	String name;
@@ -68,11 +70,11 @@ public class ClientReceiverThread extends Thread {
 				System.out.println("before runlater");
 				 
 		            	
-		                      
+				Platform.runLater(() -> {    
 				
-				main.updateGame(name, currentX, currentY, newX, newY, direction, points); 
+				Main.updateGame(name, currentX, currentY, newX, newY, direction, points); 
 				        	  
-		               
+				}); 
 
 				
 				System.out.println("after runlater");
@@ -93,7 +95,7 @@ public class ClientReceiverThread extends Thread {
 	}
 	
 	public void updateMain(String name, int currentX, int currentY, int newX, int newY, String direction, int points) {
-		main.updateGame(name, currentX, currentY, newX, newY, direction, points);
+		Main.updateGame(name, currentX, currentY, newX, newY, direction, points);
 	}
 	
 	
