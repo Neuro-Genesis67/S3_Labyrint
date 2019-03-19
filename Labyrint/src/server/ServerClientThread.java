@@ -6,6 +6,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 
+import game2019.Main;
+import game2019.Player;
+
 public class ServerClientThread extends Thread {
 
 	String message = "";
@@ -22,15 +25,15 @@ public class ServerClientThread extends Thread {
 	
 	@Override
 	public void run() {
-	System.out.println("(ServerClientThread) run()");
 		
 		
 		while(true) {
 			try {
 				message = pipeIn.readLine();
-				System.out.println("(ServerClientThread) received: " + message);
+				while (message.length() < 5) {
+					
+				}
 				Server.updateClients(message);
-				System.out.println("(ServerClientThread) scu.updateClients(message)");
 				
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -41,6 +44,11 @@ public class ServerClientThread extends Thread {
 	
 	public void updateGame(String playerDetails) throws IOException {
 		pipeOut.writeBytes(playerDetails + "\n");
+	}
+	
+	public Player getPlayer() {
+		System.out.println("(ServerClientThread) getPlayer()");
+		return Main.me;
 	}
 	
 	

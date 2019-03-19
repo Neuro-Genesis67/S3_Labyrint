@@ -65,12 +65,12 @@ public class Player {
 		this.name = name;
 	}
 	public String getPlayer() {
-		return  name + "-" + 
-				currentX + "-" + 
-				currentY + "-" + 
-				newX + "-" + 
-				newY + "-" + 
-				direction + "-" + 
+		return  name + "_" + 
+				currentX + "_" + 
+				currentY + "_" + 
+				newX + "_" + 
+				newY + "_" + 
+				direction + "_" + 
 				points;
 	}
 	@Override

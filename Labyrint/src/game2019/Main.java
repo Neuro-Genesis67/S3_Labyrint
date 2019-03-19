@@ -74,7 +74,6 @@ public class Main extends Application {
 
 	@Override
 	public void start(Stage primaryStage) {
-		System.out.println("(Main) start()");
 		try {
 			GridPane grid = new GridPane();
 			grid.setHgap(10);
@@ -148,19 +147,15 @@ public class Main extends Application {
 				switch (event.getCode()) {
 				case UP:  // Get token/Critical section here
 					updateGame(me.getName(), me.getCurrentX(), me.getCurrentY(), me.getCurrentX(), me.getCurrentY()-1, me.getDirection(), me.getPoints()); break; 
-					
 				case DOWN:  
 					updateGame(me.getName(), me.getCurrentX(), me.getCurrentY(), me.getCurrentX(), me.getCurrentY()+1, me.getDirection(), me.getPoints()); break;
-			
 				case LEFT:  
 					updateGame(me.getName(), me.getCurrentX(), me.getCurrentY(), me.getCurrentX()-1, me.getCurrentY(), me.getDirection(), me.getPoints()); break;
-					
 				case RIGHT: 
 					updateGame(me.getName(), me.getCurrentX(), me.getCurrentY(), me.getCurrentX()+1, me.getCurrentY(), me.getDirection(), me.getPoints()); 
 					break;
-			
-				
-				default: break;
+				default: 
+					break;
 				}
 			});
 			
@@ -192,8 +187,6 @@ public class Main extends Application {
 //		System.out.println(newX);
 //		System.out.println(newY);
 		
-	
-		
 		Player player = null;
 		
 		// ---------------------------------------Er spilleren i players listen?
@@ -202,20 +195,20 @@ public class Main extends Application {
 			// Is the player myself?
 			if (p.getName().equals(me.getName())) {
 				player = me;
-				System.out.println("(Main) updateGame() -> " + p.getName() + " My own player has been selected");
+//				System.out.println("(Main) updateGame() -> " + p.getName() + " My own player has been selected");
 				break;
 				
 		// Is the player someone else in the list?
 			} else if (p.getName().equals(name)) {
 				player = p;
-				System.out.println("(Main) updateGame() -> " + p.getName() + " Someone elses player has been selected");
+//				System.out.println("(Main) updateGame() -> " + p.getName() + " Someone elses player has been selected");
 				break;
 			}
 		}
 		
 		// If player is not in playerlist
 		if (player == null) {
-			System.out.println("(Main) updateGame() -> " + "Player not found - Adding new player to game");
+//			System.out.println("(Main) updateGame() -> " + "Player not found - Adding new player to game");
 			player = new Player(name, currentX, currentY, newX, newY, direction, points);
 			players.add(player);
 			if (direction.equals("up")) {
@@ -237,21 +230,34 @@ public class Main extends Application {
 		
 		// ----------------------------------------------------------------------
 		
-		
+		// (a player has now been selected or a new one has been created)
+			
 		// Is x+y a wall?
 		if (board[newY].charAt(newX)=='w') { //prøv med ""
 			System.out.println("(main) " + player.getName() + " hit a wall");
 			player.addPoints(-1);
 			scoreList.setText(getScoreList());
+			try {
+				sendMove();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		} else {
 			
 		// Is x+y a player?
 			Player otherPlayer = getPlayerAt(newX, newY);
 			if (otherPlayer != null) {
-				System.out.println("(main) " + player.getName() + " walks into another player");
-				player.addPoints(10);
-				otherPlayer.addPoints(-10);
-				scoreList.setText(getScoreList());
+				System.out.println(otherPlayer.getName());
+				if (otherPlayer.getName() == me.getName()) {
+					System.out.println("(updateGame) No updates were made");
+					return;
+				} else {
+					System.out.println("(main) " + player.getName() + " walks into another player");
+					player.addPoints(10);
+					otherPlayer.addPoints(-10);
+					scoreList.setText(getScoreList());
+				}
+			
 				
 			} else {
 		
@@ -320,10 +326,11 @@ public class Main extends Application {
 	private void connectToServer() throws UnknownHostException, IOException, InterruptedException {
 		clientReceiverThread = new ClientReceiverThread();
 		clientReceiverThread.start();
+//		Når en spiller connecter skal han hente informationer om alle andre spillere og opdatere sit spil.
 	}
 	
 	private static void sendMove() throws IOException {
-		clientReceiverThread.sendToServer(me.getPlayer() + "\n");
+		clientReceiverThread.updatePlayers(me.getPlayer() + "\n");
 	}
 	
 	public static void main(String[] args) {

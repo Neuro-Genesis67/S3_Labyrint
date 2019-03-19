@@ -17,7 +17,6 @@ public class Server {
 
 	
 	public static void main(String[] args) {
-		System.out.println("(Server) main()");
 		
 		try {
 			serverSocket = new ServerSocket(5000);
@@ -35,10 +34,14 @@ public class Server {
 	}
 	
 	public static void updateClients(String playerDetails) throws IOException {
+		System.out.println("(Server) updateClients() -> " + playerDetails);
 		for (ServerClientThread sct : sctList) {
-			System.out.println("(Server) updateClients() -> sct.updateGame(playerDetails)");
 			sct.updateGame(playerDetails);
 		}
+	}
+	
+	public static List<ServerClientThread> getSctList(){
+		return sctList;
 	}
 	
 	
