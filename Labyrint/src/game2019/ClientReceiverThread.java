@@ -32,7 +32,7 @@ public class ClientReceiverThread extends Thread {
 	public ClientReceiverThread() throws InterruptedException {
 		
 		try {
-			client_Server = new Socket("192.168.0.100", 5000);
+			client_Server = new Socket("192.168.0.102", 5000);
 			pipeIn = new BufferedReader(new InputStreamReader(client_Server.getInputStream()));
 			pipeOut = new DataOutputStream(client_Server.getOutputStream());
 		} catch (UnknownHostException e) {
