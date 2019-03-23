@@ -35,8 +35,15 @@ public class Server {
 	
 	public static void updateClients(String playerDetails) throws IOException {
 		System.out.println("(Server) updateClients() -> " + playerDetails);
+//		String parts[] = playerDetails.split("_");
+//		String senderName = parts[0];
+//		System.out.println("Sendername: " + senderName);
 		for (ServerClientThread sct : sctList) {
-			sct.updateGame(playerDetails);
+//			if (sct.getPlayer().getName() == senderName) {
+//				System.out.println("It's equal to the name");
+//			} else {
+				sct.updateGame(playerDetails);				
+//			}
 		}
 	}
 	
